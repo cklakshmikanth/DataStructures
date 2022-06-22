@@ -9,7 +9,7 @@ public class HeapUsingArray<T extends Comparable<T>> {
 
     public HeapUsingArray(int capacity) {
         this.capacity = capacity;
-        heap = (T[]) new Comparable[capacity];//Note: We can use array of object since object class does not implement comparable.
+        heap = (T[]) new Comparable[capacity];//Note: We cant use array of object since object class does not implement comparable.
     }
 
     public T peek() {
@@ -36,17 +36,17 @@ public class HeapUsingArray<T extends Comparable<T>> {
         if(leftChildValue == null) {
             return;
         } else if(rightChildValue == null) {
-            if(isLess(leftChildIndex, i)) {
+            if(isLesser(leftChildIndex, i)) {
                 swap(leftChildIndex, i);
             }
         } else {
-            if(isLess(leftChildIndex, rightChildIndex)) {
-                if(isLess(leftChildIndex, i)) {
+            if(isLesser(leftChildIndex, rightChildIndex)) {
+                if(isLesser(leftChildIndex, i)) {
                     swap(leftChildIndex, i);
                     sink(leftChildIndex);
                 }
             } else {
-                if(isLess(rightChildIndex, i)) {
+                if(isLesser(rightChildIndex, i)) {
                     swap(rightChildIndex, i);
                     sink(rightChildIndex);
                 }
@@ -60,11 +60,15 @@ public class HeapUsingArray<T extends Comparable<T>> {
         heap[j] = temp;
     }
 
-    private boolean isLess(int i, int j) {
+    private boolean isLesser(int i, int j) {
         return heap[i].compareTo(heap[j]) <= 0;
     }
 
-    public T remove(int index) {
+    private boolean isGreater(int i, int j) {
+        return heap[i].compareTo(heap[j]) >= 0;
+    }
+
+    private T remove(int index) {
         if(size == 0)
             return null;
         else {
@@ -75,6 +79,22 @@ public class HeapUsingArray<T extends Comparable<T>> {
             size--;
             return obj;
         }
+    }
+
+    public boolean remove(T obj) {
+        int index = getObjectIndex(obj);
+        if(index != -1) {
+            remove(index);
+            return true;
+        }
+        return false;
+    }
+
+    private int getObjectIndex(T obj) {
+        for(int i = 0; i < size; i++)
+            if(heap[i].equals(obj))
+                return i;
+        return -1;
     }
 
     public void add(T obj) {
@@ -91,9 +111,47 @@ public class HeapUsingArray<T extends Comparable<T>> {
         if(index == 0)
             return;
         int parentIndex = (index - 1) / 2;
-        if(isLess(index, parentIndex)) {
+        if(isLesser(index, parentIndex)) {
             swap(index, parentIndex);
             swim(parentIndex);
+        }
+    }
+
+    public void heapify(T[] array) {
+        heap = array;
+        size = capacity = array.length;
+        for(int i = size - 1; i >=0; i--) {
+            heapifySink(i);
+        }
+    }
+
+    private void heapifySink(int i) {
+        if(i < size / 2) {
+            int leftChildIndex = 2 * i + 1;
+            int rightChildIndex = 2 * i + 2;
+
+            T leftChildValue = leftChildIndex > capacity - 1 ? null : heap[leftChildIndex];
+            T rightChildValue = rightChildIndex > capacity - 1 ? null : heap[rightChildIndex];
+
+            if (leftChildValue == null) {
+                return;
+            } else if (rightChildValue == null) {
+                if (isGreater(leftChildIndex, i)) {
+                    swap(leftChildIndex, i);
+                }
+            } else {
+                if (isGreater(leftChildIndex, rightChildIndex)) {
+                    if (isGreater(leftChildIndex, i)) {
+                        swap(leftChildIndex, i);
+                        heapifySink(leftChildIndex);
+                    }
+                } else {
+                    if (isGreater(rightChildIndex, i)) {
+                        swap(rightChildIndex, i);
+                        heapifySink(rightChildIndex);
+                    }
+                }
+            }
         }
     }
 }

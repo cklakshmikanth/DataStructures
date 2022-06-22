@@ -1,5 +1,7 @@
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 
 public class HeapTest {
@@ -58,5 +60,14 @@ public class HeapTest {
         assertEquals(new Integer(13), pq.poll());
         assertEquals(new Integer(14), pq.poll());
         assertEquals(new Integer(19), pq.poll());
+    }
+
+    @Test
+    public void testHeapify() {
+        HeapUsingArray<Integer> heap = new HeapUsingArray<>();
+        Integer[] integers = new Integer[] { 15, 5, 20, 1, 17, 10, 30};
+        heap.heapify(integers);
+
+        assertEquals("[30, 17, 20, 1, 5, 10, 15]", Arrays.toString(integers));
     }
 }
